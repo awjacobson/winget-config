@@ -1,0 +1,45 @@
+properties:
+  resources:
+    - resource: Microsoft.Windows.Developer/DeveloperMode
+      directives:
+        description: Enable Developer Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vsPackage
+      directives:
+        description: Install Visual Studio Professional 2022
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudio.2022.Professional
+        source: winget
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
+      dependsOn:
+        - vsPackage
+      directives:
+        description: Install required VS workloads
+        allowPrerelease: true
+      settings:
+        productId: Microsoft.VisualStudio.Product.Community
+        channelId: VisualStudio.17.Release
+        vsConfigFile: '${WinGetConfigRoot}\..\.vsconfig'
+#    - resource: Microsoft.VisualStudioCode
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: npm
+      directives:
+        description: Install Node.js
+        allowPrerelease: true
+      settings:
+        id:  OpenJS.NodeJS
+        source: winget
+    - resource: NpmDsc/NpmPackage
+      dependsOn:
+        - npm
+      directives:
+        description: Install vsts-npm-auth
+        allowPrerelease: true
+      settings:
+        Name: 'vsts-npm-auth'
+        Global: true
+  configurationVersion: 0.2.0
